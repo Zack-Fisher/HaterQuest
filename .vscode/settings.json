@@ -1,0 +1,21 @@
+{
+    "files.associations": {
+        "label.h": "c",
+        "button.h": "c",
+        "pos.h": "c",
+        "world.h": "c",
+        "controller.h": "c",
+        "mover.h": "c",
+        "array": "c",
+        "chrono": "c",
+        "compare": "c",
+        "functional": "c",
+        "memory_resource": "c",
+        "ratio": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "color.h": "c",
+        "ecs.h": "c"
+    }
+}
