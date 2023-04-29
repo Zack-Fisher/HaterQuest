@@ -16,6 +16,8 @@
         "type_traits": "c",
         "utility": "c",
         "color.h": "c",
-        "ecs.h": "c"
+        "ecs.h": "c",
+        "draw.h": "c",
+        "nc_util.h": "c"
     }
 }

@@ -1,4 +1,5 @@
 #include "controller.h"
+#include "layer/input.h"
 
 SYSTEM(
     controller_system,
@@ -6,7 +7,6 @@ SYSTEM(
     GET_COMPONENT(c, Controller)
     GET_COMPONENT(p, Position),
     {
-        // Check input and update position accordingly
         if (kDown & KEY_A || kHeld & KEY_A) {
             p->x += c->speed;
         }

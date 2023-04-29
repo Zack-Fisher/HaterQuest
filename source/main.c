@@ -2,8 +2,17 @@
 #include <stdio.h>
 #include <assert.h>
 #include <ctype.h>
-#include <3ds.h>
+#include <stdbool.h>
 
+#ifdef _3DS
+    #include <3ds.h>
+#elif defined(__linux__)
+    #include <ncurses.h>
+    #include <unistd.h>
+    #include <time.h>
+#else
+    #error "Unsupported platform"
+#endif
 // components/systems
 // UI COMPONENTS
 #include "ui/button.h"
@@ -17,6 +26,9 @@
 #include "systems.h"
 #include "prefab.h"
 
+#include "layer/draw.h"
+#include "layer/prints.h"
+
 // helper defines
 #include "color.h"
 #include "prints.h"
@@ -26,12 +38,6 @@
 #include "main.h"
 
 void drawBackground(u32 color) {
-    u32* frameBuffer = (u32*)gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
-    for (int y = 0; y < 240; y++) {
-        for (int x = 0; x < 400; x++) {
-            frameBuffer[y * 400 + x] = color;
-        }
-    }
 }
 
 int main(int argc, char** argv) {
@@ -44,8 +50,18 @@ int main(int argc, char** argv) {
         return &world;
     }
 
-    gfxInitDefault();
-    consoleInit(GFX_TOP, NULL);
+    // Initialize platform-specific graphics and input
+    #ifdef _3DS
+        gfxInitDefault();
+        consoleInit(GFX_TOP, NULL);
+    #elif defined(__linux__)
+        initscr();
+        raw();
+        keypad(stdscr, TRUE);
+        noecho();
+        curs_set(0);
+        start_color();
+    #endif
 
     World* world = initECS();
 
@@ -55,9 +71,17 @@ int main(int argc, char** argv) {
     int y = SCREEN_HEIGHT / 2;
 
     // get the current time in nanoseconds
+    #ifdef _3DS
+        u64 last_frame_time = svcGetSystemTick();
+    #elif defined(__linux__)
+        struct timespec last_frame_time;
+        clock_gettime(CLOCK_MONOTONIC, &last_frame_time);
+    #endif
+
+    // get the current time in nanoseconds
     u64 last_frame_time = svcGetSystemTick();
 
-    while (aptMainLoop()) {
+    while (true) {
         void updateDelta() 
         {
             // get the current time in nanoseconds
@@ -65,10 +89,11 @@ int main(int argc, char** argv) {
 
             // calculate delta time in seconds
             deltaTime = (current_time - last_frame_time) / 1000000000.0f;
+            last_frame_time = current_time;
         }
         void refreshLoop(World* world) {
             consoleClear();
-            drawBackground(RGBA8(0x20, 0x98, 0x10, 0xFF));
+            fillScreen(RGBA8(0x20, 0x98, 0x10, 0xFF));
         }
         void testLoop(World* world) {
             for (int i = 1; i < 6; ++i)
@@ -77,10 +102,40 @@ int main(int argc, char** argv) {
             }
         }
 
+        #ifdef _3DS
+            if (!aptMainLoop()) break;
+        #elif defined(__linux__)
+            int ch = getch();
+            if (ch == 'q' || ch == 'Q') break;  // Quit on 'q' or 'Q' key press
+        #endif
+
         refreshLoop(world);
         updateDelta();
         testLoop(world);
         loopECS(world, deltaTime);
+
+        #ifdef _3DS
+            gfxFlushBuffers();
+            gfxSwapBuffers();
+            gspWaitForVBlank();
+        #elif defined(__linux__)
+            refresh();
+            usleep(1000000 / 60);  // Sleep for approximately 1/60th of a second
+        #endif
+    }
+
+    // Deinitialize platform-specific graphics and input
+    #ifdef _3DS
+        gfxExit();
+    #elif defined(__linux__)
+        endwin();
+    #endif
+
+    return 0;
+}
+
+    while (aptMainLoop()) {
+
 
         gfxFlushBuffers();
         gfxSwapBuffers();

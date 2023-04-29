@@ -2,12 +2,13 @@
 #include <stdio.h>
 
 #include "../mover.h"
+#include "layer/prints.h"
 
 SYSTEM(
     draw_label_system,
     GET_COMPONENT(l, Label)
     GET_COMPONENT(p, Position),
     {
-        printf("\x1b[%d;%dH%s", p->y, p->x, l->text);
+        fprint(p->x, p->y, "%s", l->text);
     },
 )

@@ -2,7 +2,6 @@
 #define CONTROLLER_H
 
 #include <ctype.h>
-#include <3ds.h>
 
 #include "pos.h"
 
