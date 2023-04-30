@@ -13,11 +13,10 @@ OUTPUT := my_program
 # Define the source directories
 SRC_DIRS := source
 
-# Collect all source files in the specified directories
+# compile all files, except the ones in the layer directory outside of our target layer
 SOURCES := $(shell find $(SRC_DIRS) -name '*.c')
-
-# Exclude the source files in the excluded directory
-SOURCES := $(filter-out source/layer/3ds/%, $(SOURCES))
+SOURCES := $(filter-out source/layer/%, $(SOURCES))
+SOURCES += $(shell find source/layer/sdl2 -name '*.c')
 
 # Generate the corresponding object file names
 OBJS := $(SOURCES:.c=.o)

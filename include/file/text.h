@@ -7,6 +7,7 @@ typedef struct
 {
     char *data;
     size_t size;
+    char *name;
 } TextFile;
 
 TextFile *textfile_open(const char *path);

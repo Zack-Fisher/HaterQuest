@@ -4,11 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef _3ds
-#define TEXT_HEADER "romfs:/text/%s"
-#elif defined(__linux__)
 #define TEXT_HEADER "romfs/text/%s"
-#endif
 
 TextFile *textfile_open(const char *filename)
 {
@@ -62,8 +58,7 @@ void textfile_pretty_print(TextFile *file)
 {
     if (file && file->data)
     {
-        fprint(0, 0, "-----BEGIN FILE-----\n");
-        fprint(0, 1, "%s\n", file->data);
-        fprint(0, 20, "------END FILE------\n");
+        _printf(0, 0, "-----READING FILE <%s>-----\n", file->name);
+        _printf(0, 1, "%s\n", file->data);
     }
 }
