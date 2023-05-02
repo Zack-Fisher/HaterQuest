@@ -14,26 +14,9 @@ typedef enum {
     ACTION_COUNT
 } Action;
 
-// define different mappings for different platforms
-#ifdef _3ds
-    int action_key_map[ACTION_COUNT] = {
-        KEY_DUP,
-        KEY_DDOWN,
-        KEY_DLEFT,
-        KEY_DRIGHT
-    };
-#elif defined(__linux__)
-#include <ncurses.h>
-    int action_key_map[ACTION_COUNT] = {
-        KEY_UP,
-        KEY_DOWN,
-        KEY_LEFT,
-        KEY_RIGHT
-    };
-#endif
-
 void input_init();
 void input_update();
+int** get_action_key_map();
 bool is_down(Action a);
 bool is_released(Action a);
 bool is_pressed(Action a);
